@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quiz-Esfera</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <div id="info">ROTACIÓN<br/>
+      Usar flecha arriba para realizar, paso a paso, la escala de la figura en X,Y y Z.<br/>
+  </div>
+    <script src="js/three.min.js"></script>
+    <script>
+		var scene, aspect, camera, renderer;
+		var startTime = Date.now();
+		
+		init();
+		animate();
+	
+		function init(){
+			//INICIALIZACIÓN DE LA ESCENA
+			scene = new THREE.Scene();
+			aspect = window.innerWidth / window.innerHeight;
+			camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+      			//EVENTOS DE TECLADO
+			//Códigos de las teclas: https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
+	/*		var onKeyDown = function ( event ) {
+				switch ( event.keyCode ) {
+					case 38: // TRASLADAR EN DIRECCION POSITIVA
+						upArrow = true;
+						break;
+				}
+			};	  
+		  			
+			var onKeyUp = function ( event ) {
+				switch ( event.keyCode ) {
+					case 38: // TRASLADAR EN DIRECCION POSITIVA
+						pressed = false;
+						upArrow = false;
+						break;
+				}
+			};	  	
+			
+			document.addEventListener( 'keydown', onKeyDown, false );
+			document.addEventListener( 'keyup', onKeyUp, false );
+      */
+				  			
+			//ELEMENTOS DE ESCENA
+			var size = 10;
+			var arrowSize = 4;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  var z = new THREE.Vector3( 0, 0, 1 );
+			var color1 = new THREE.Color( 0x333333);
+		  var color2 = new THREE.Color( 0x008F39);
+		  var colorR = new THREE.Color( 0xAA3333 );
+		  var colorG = new THREE.Color( 0x33AA33 );
+		  var colorB = new THREE.Color( 0x333366 );
+      var colorC = new THREE.Color( 0x33FA33 );
+		  var grados= -0.7853;
+    
+		  //CREAR LAS GRILLAS PARA EL ESCENARIO
+		  var axesHelper = new THREE.AxesHelper( size );
+		  var gridHelperXY = new THREE.GridHelper( size, divisions, color1, color1);
+		  var gridHelperXZ = new THREE.GridHelper( size, divisions, color2, color2 );
+		  var gridHelperYZ = new THREE.GridHelper( size, divisions, color2, color2 );
+            
+      //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+      gridHelperXY.rotateOnWorldAxis ( x, THREE.Math.degToRad(90) );
+      gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+      gridHelperYZ.rotateOnWorldAxis ( z, THREE.Math.degToRad(90) );
+            
+      //CREAR LAS FLECHAS QUE INDICAN LOS EJES DE COORDENADAS 3D
+      var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR );
+      var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG );
+      var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB );
+			
+			//CREAR LAS GEOMETRÍAS
+      var geometry = new THREE.SphereGeometry(1,10,10);
+            
+      //CREAR LOS MATERIALES
+      var material = new THREE.MeshNormalMaterial();
+
+	//CREAR LOS OBJETOS
+	  var Sphere  = new THREE.Mesh( geometry, material );
+  //  Sphere.matrixAutoUpdate=false;
+   // Sphere.matrix.makeTranslation (3,0,2);
+      var escalX= matrizescalX();
+      var escalY= matrizescalY();
+      var escalZ= matrizescalZ();
+      var trasla= matriztrasla();
+      var RotaY= matrizrotaY(-grados);
+      var RotaX= matrizrotaX(grados);
+
+      Sphere.applyMatrix(escalX);
+      Sphere.applyMatrix(escalY);
+      Sphere.applyMatrix(escalZ);
+      Sphere.applyMatrix(trasla);
+      Sphere.applyMatrix(RotaY);
+      Sphere.applyMatrix(RotaX);
+
+		  //AGREGAR A LA ESCENA
+      scene.add( gridHelperXZ );
+		  scene.add( arrowX );	
+		  scene.add( arrowY );	
+		  scene.add( arrowZ );	
+			scene.add( Sphere );
+			
+			//MOVER LA CÁMARA
+			camera.position.x = 5;
+			camera.position.y = 8;	 
+		  camera.position.z =  8;			
+		  camera.lookAt( origin );
+			}
+                
+      function matrizescalX(){
+        //Matriz que escala la figura
+      var sx = 0.5, sy = 1, sz = 1;
+        var matrizescalX = new THREE.Matrix4();
+
+        matrizescalX.set(sx, 0, 0, 0,
+                    0, sy, 0, 0,
+                    0, 0, sz, 0,
+                    0, 0, 0, 1);
+
+        return matrizescalX;   
+      }
+      function matrizescalY(){
+        //Matriz que escala la figura
+      var sx = 1, sy = 0.5, sz = 1;
+        var matrizescalY = new THREE.Matrix4();
+
+        matrizescalY.set(sx, 0, 0, 0,
+                    0, sy, 0, 0,
+                    0, 0, sz, 0,
+                    0, 0, 0, 1);
+
+        return matrizescalY;   
+      }
+      function matrizescalZ(){
+        //Matriz que escala la figura
+      var sx = 1, sy = 1, sz = 3;
+        var matrizescalZ = new THREE.Matrix4();
+
+        matrizescalZ.set(sx, 0, 0, 0,
+                    0, sy, 0, 0,
+                    0, 0, sz, 0,
+                    0, 0, 0, 1);
+
+        return matrizescalZ;   
+      }
+      function matrizrotaX (angulo){
+      
+      //Matriz de rotación 
+        var RotX = new THREE.Matrix4();
+        var ang= angulo;
+        var cos = Math.cos(ang);
+        var sen = Math.sin(ang);
+
+        RotX.set(1, 0, 0, 0,
+                    0, cos, -sen, 0,
+                    0, sen, cos, 0,
+                    0, 0, 0, 1);
+        
+       return RotX;             
+
+      }
+      function matriztrasla(){
+      //Matriz que envia la figura al centro
+      var sx = 0, sy = 0, sz = 2.8;
+        var Matriztrs = new THREE.Matrix4();
+
+        Matriztrs.set(1, 0, 0, sx,
+                    0, 1, 0, sy,
+                    0, 0, 1, sz,
+                    0, 0, 0, 1);
+
+        return Matriztrs;
+      }  
+      function matrizrotaY (angulo){
+      
+      //Matriz de rotación 
+        var RotY = new THREE.Matrix4();
+        var ang= angulo;
+        var cos = Math.cos(ang);
+        var sen = Math.sin(ang);
+
+        RotY.set(cos, 0, sen, 0,
+                    0, 1, 0, 0,
+                    -sen, 0, cos, 0,
+                    0, 0, 0, 1);
+        
+       return RotY;             
+
+      }
+    function animate() {
+        render();
+        requestAnimationFrame( animate );
+
+    }
+
+    function render(){
+    var dtime = Date.now()-startTime;
+		/*var escax=1, escay=1, escaz=1; 
+		if(upArrow && !pressed){
+			pressed = true;
+			switch(flag){
+        case 0: flag = 1; 
+				escax=1/2, escay=1, escaz=1;					
+				break;
+				case 1: flag = 2; 
+				escax=1, escay=1/2, escaz=1;	
+				break;
+				case 2: flag = 3; 
+        escax=1, escay=1, escaz=3;
+				break;
+        case 3: flag = 4; 
+       escax=2, escay=2, escaz=1/3;
+				break;
+			}
+      var t=new THREE.Matrix4();
+      t.set(escax,0,0,0,  0,escay,0,0,  0,0,escaz,0,  0,0,0,1);
+      Object.applyMatrix(t);
+		}
+    */
+
+        camera.lookAt( 0, 0, 0 );
+
+        camera.position.x = 10 * Math.cos(dtime / 10000);
+        camera.position.z = 10 * Math.sin(dtime / 10000);
+        renderer.render( scene, camera );
+    }
+    </script>
+  </body>
+</html> 
