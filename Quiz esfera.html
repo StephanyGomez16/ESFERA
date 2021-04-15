@@ -14,7 +14,18 @@
     <script>
 		var scene, aspect, camera, renderer;
 		var startTime = Date.now();
+    var upArrow = false;
+		var downArrow = false;
+		var leftArrow = false;
+		var rightArrow = false;
+		var scaleUp = false;
+		var scaleDown = false;
+		var xAxis = true;
+		var yAxis = false;
+		var zAxis = false;
 		
+
+
 		init();
 		animate();
 	
@@ -27,27 +38,60 @@
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
       			//EVENTOS DE TECLADO
-			//Códigos de las teclas: https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
-	/*		var onKeyDown = function ( event ) {
+            var onKeyDown = function ( event ) {
 				switch ( event.keyCode ) {
-					case 38: // TRASLADAR EN DIRECCION POSITIVA
+					case 38: // TRASLADAR ADELANTE
 						upArrow = true;
 						break;
+					case 40: // TRASLADAR ATRÁS
+						downArrow = true;
+						break;
+					case 83: // ESCALA AGRANDAR
+						scaleUp = true;
+						break;
+					case 87: // ESCALA DISMINUIR
+						scaleDown = true;
+						break;
+					case 37: // ROTAR CW
+						leftArrow = true;
+						break;
+					case 39: // ROTAR CCW
+						rightArrow = true;
+						break;
+					case 88: // SELECCIONAR EJE X DE ROTACION
+						yAxis = false;
+						zAxis = false;
+						xAxis = true;
+						break;
+
 				}
-			};	  
+			};	   
 		  			
 			var onKeyUp = function ( event ) {
 				switch ( event.keyCode ) {
-					case 38: // TRASLADAR EN DIRECCION POSITIVA
-						pressed = false;
+					case 38: // TRASLADAR
 						upArrow = false;
 						break;
+					case 40: // TRASLADAR
+						downArrow = false;
+						break;
+					case 37: // ROTAR CW
+						leftArrow = false;
+						break;
+					case 39: // ROTAR CCW
+						rightArrow = false;
+						break;
+					case 83: // ESCALA AGRANDAR
+						scaleUp = false;
+						break;
+					case 87: // ESCALA DISMINUIR
+						scaleDown = false;
+						break;
 				}
-			};	  	
+			};  	
 			
 			document.addEventListener( 'keydown', onKeyDown, false );
 			document.addEventListener( 'keyup', onKeyUp, false );
-      */
 				  			
 			//ELEMENTOS DE ESCENA
 			var size = 10;
@@ -83,7 +127,16 @@
 			
 			//CREAR LAS GEOMETRÍAS
       var geometry = new THREE.SphereGeometry(1,10,10);
-            
+      for ( var i = 0; i < geometry.faces.length; i ++ ) {
+				switch(i){
+					case 0: case 1: geometry.faces[ i ].color = colorRd; break;
+					case 2: case 3: geometry.faces[ i ].color = colorRd; break;
+					case 4: case 5: geometry.faces[ i ].color = colorBd; break;
+					case 6: case 7: geometry.faces[ i ].color = colorBd; break;
+					case 8: case 9: geometry.faces[ i ].color = colorGd; break;
+					case 10: case 11: geometry.faces[ i ].color = colorGd; break;
+				}
+			}      
       //CREAR LOS MATERIALES
       var material = new THREE.MeshNormalMaterial();
 
@@ -207,7 +260,7 @@
 
     function render(){
     var dtime = Date.now()-startTime;
-		/*var escax=1, escay=1, escaz=1; 
+		var escax=1, escay=1, escaz=1; 
 		if(upArrow && !pressed){
 			pressed = true;
 			switch(flag){
@@ -228,7 +281,7 @@
       t.set(escax,0,0,0,  0,escay,0,0,  0,0,escaz,0,  0,0,0,1);
       Object.applyMatrix(t);
 		}
-    */
+    
 
         camera.lookAt( 0, 0, 0 );
 
